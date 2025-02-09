@@ -1,4 +1,3 @@
-import { produce } from "immer";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -23,7 +22,7 @@ export interface CityData {
 
 export const useAppStore = create<AppStore>()(
     persist(
-        immer((set, get) => ({
+        immer((set) => ({
             currentCityIndex: 0,
             cities: [],
 
@@ -32,16 +31,18 @@ export const useAppStore = create<AppStore>()(
             },
 
             addCity: (city: CityData) => {
-                set({
-                    cities: get().cities.concat(city),
+                set((state: AppStore) => {
+                    state.cities.push(city);
+                    state.currentCityIndex = Math.max(state.currentCityIndex, 0);
                 });
             },
             removeCity: (id) => {
                 set((state: AppStore) => {
                     const cityIndex = state.cities.findIndex((city) => city.id === id);
-                    state.cities.splice(cityIndex, 1);
-                    state.currentCityIndex = 0; //Math.min(state.currentCityIndex, state.cities.length - 1);
-                    console.log(state.currentCityIndex);
+                    if (cityIndex >= 0) {
+                        state.cities.splice(cityIndex, 1);
+                        state.currentCityIndex = Math.min(state.currentCityIndex, state.cities.length - 1);
+                    }
                 });
             },
         })),

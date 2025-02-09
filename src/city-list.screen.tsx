@@ -4,16 +4,28 @@ import { useState } from "react";
 import { FaTimes, FaTrash } from "react-icons/fa";
 
 import { AddCityScreen } from "./add-city-screen";
-import { useAppStore } from "./store";
+import { CityData, useAppStore } from "./store";
 
 export function CitylistScreen({ onClose }: { onClose: () => void }) {
     const cities = useAppStore((state) => state.cities);
     const removeCity = useAppStore((state) => state.removeCity);
     const currentCityIndex = useAppStore((state) => state.currentCityIndex);
-    console.log("rerender", currentCityIndex);
     const setCurrentCityIndex = useAppStore((state) => state.setCurrentCityIndex);
 
     const [addCityOpen, setAddCityOpen] = useState(false);
+
+    const handleCitySelect = (e: React.MouseEvent, index: number) => {
+        e.stopPropagation();
+        setCurrentCityIndex(index);
+    };
+    const handleCityDelete = (e: React.MouseEvent, city: CityData) => {
+        e.stopPropagation();
+        removeCity(city.id);
+
+        if (cities.length <= 1) {
+            onClose();
+        }
+    };
 
     return (
         <>
@@ -43,15 +55,14 @@ export function CitylistScreen({ onClose }: { onClose: () => void }) {
                             <div
                                 key={city.id}
                                 className="flex flex-row justify-between items-center"
-                                onClick={() => setCurrentCityIndex(cityIndex)}
+                                onClick={(e) => handleCitySelect(e, cityIndex)}
                             >
-                                {currentCityIndex}
                                 <div className={clsx(cityIndex === currentCityIndex ? "opacity-100" : "opacity-50")}>
                                     <p>{city.name}</p>
                                     <p className="text-xs uppercase text-zinc-400">{city.country}</p>
                                 </div>
                                 <div>
-                                    <div className="text-zinc-600" onClick={() => removeCity(city.id)}>
+                                    <div className="text-zinc-600" onClick={(e) => handleCityDelete(e, city)}>
                                         <FaTrash />
                                     </div>
                                 </div>

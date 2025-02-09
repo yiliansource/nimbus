@@ -1,4 +1,4 @@
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { FaCog } from "react-icons/fa";
@@ -46,6 +46,7 @@ function App() {
             .then((res) => res.json())
             .then((res: OpenMeteoWeatherResult) => {
                 setWeatherApiResponse(res);
+                setWeatherApiLoading(false);
             });
     }, [currentCityData]);
 
@@ -78,14 +79,12 @@ function App() {
 
                 <AnimatePresence mode="wait">
                     {weatherApiLoading ? (
-                        weatherApiResponse ? (
-                            <motion.div className="">
-                                <WeatherDashboard data={weatherApiResponse} />
-                            </motion.div>
-                        ) : null
-                    ) : (
                         <motion.div>loading...</motion.div>
-                    )}
+                    ) : weatherApiResponse ? (
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                            <WeatherDashboard data={weatherApiResponse} />
+                        </motion.div>
+                    ) : null}
                 </AnimatePresence>
             </main>
         </>
