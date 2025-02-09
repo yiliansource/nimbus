@@ -7,6 +7,7 @@ import { FaCloud, FaCloudRain, FaWind } from "react-icons/fa";
 
 import { OpenMeteoWeatherResult } from "./open-meteo";
 import { WeatherIcon } from "./weather-icon";
+import { weatherCodeToLabel } from "./weathercodes";
 
 export function WeatherDashboard({ data }: { data: OpenMeteoWeatherResult }) {
     const currentWeatherInfos: {
@@ -48,22 +49,22 @@ export function WeatherDashboard({ data }: { data: OpenMeteoWeatherResult }) {
 
     return (
         <>
-            <div className="mb-6 flex flex-row justify-between items-center">
+            <div className="mb-4 flex flex-row justify-between items-center">
                 <div className="px-2 flex flex-col items-center">
-                    <span className="-mb-3 font-black text-6xl">
+                    <span className="-mt-3 -mb-2 font-black text-6xl">
                         <NumberFlow value={Math.floor(data.current.temperature_2m * 10) / 10} willChange />
                         <span>°</span>
                     </span>
-                    {/* <p className="text-sm text-zinc-300">Thunderstorm</p> */}
+                    <p className="text-sm text-zinc-300">{weatherCodeToLabel(data.current.weather_code)}</p>
                 </div>
                 <div className="flex flex-col ">
-                    <span className="block px-2 text-6xl w-32">
+                    <span className="block text-6xl w-32 h-32">
                         <WeatherIcon code={data.current.weather_code} />
                         {/* <FaCloudRain /> */}
                     </span>
                 </div>
             </div>
-            <div className="p-4 mb-4 flex flex-row justify-between bg-zinc-800 rounded-xl">
+            <div className="p-5 mb-4 flex flex-row justify-between bg-zinc-800 rounded-xl">
                 {currentWeatherInfos.map((info) => (
                     <div key={info.label} className="px-4 flex flex-col items-center">
                         <span className="mb-2 text-xl">{info.icon}</span>
@@ -103,7 +104,7 @@ export function WeatherDashboard({ data }: { data: OpenMeteoWeatherResult }) {
                         className="flex shrink-0 flex-col py-3 px-5 bg-zinc-800 rounded-xl items-center"
                     >
                         <p className="mb-1 text-xs text-zinc-400">{format(data.time, "kk:mm")}</p>
-                        <div className="mb-2 text-lg h-8">
+                        <div className="mb-1 text-lg h-8 w-8">
                             <WeatherIcon code={data.weather_code} />
                         </div>
                         <p className="text-sm">{data.temperature.toFixed(0)}°</p>

@@ -1,7 +1,6 @@
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { FaCog } from "react-icons/fa";
 
 import { AddCityScreen } from "./add-city-screen";
 import { CitylistScreen } from "./city-list.screen";
@@ -67,13 +66,13 @@ function App() {
                         <p className="text-sm text-zinc-400">{format(new Date(), "cccc, do LLLL")}</p>
                     </motion.div>
                     <div>
-                        <motion.div
+                        {/* <motion.div
                             className="bg-zinc-800 text-zinc-400 p-2 rounded-lg"
                             whileTap={{ scale: 0.9 }}
                             whileHover={{ scale: 1.1 }}
                         >
                             <FaCog />
-                        </motion.div>
+                        </motion.div> */}
                     </div>
                 </div>
 

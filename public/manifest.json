@@ -1,15 +1,15 @@
 {
     "short_name": "nimbus",
-    "name": "nimbus",
+    "name": "nimbus - simple weather checking",
     "description": "weather app",
     "icons": [
         {
-            "src": "/favicon.png",
+            "src": "/app-icon.png",
             "type": "image/png",
             "sizes": "120x120"
         },
         {
-            "src": "/favicon.png",
+            "src": "/app-icon.png",
             "type": "image/png",
             "sizes": "180x180"
         }
