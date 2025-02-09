@@ -1,8 +1,4 @@
-import NumberFlow from "@number-flow/react";
-import clsx from "clsx";
 import { format, parseISO } from "date-fns";
-import { motion } from "motion/react";
-import { useState } from "react";
 import { FaCloud, FaCloudRain, FaWind } from "react-icons/fa";
 
 import { OpenMeteoWeatherResult } from "./open-meteo";
@@ -32,8 +28,8 @@ export function WeatherDashboard({ data }: { data: OpenMeteoWeatherResult }) {
         },
     ];
 
-    const [currentForecastOption, setCurrentForecaseOption] = useState(0);
-    const forecastOptions = ["Today", "Tomorrow", "Next week"];
+    // const [currentForecastOption, setCurrentForecaseOption] = useState(0);
+    // const forecastOptions = ["Today", "Tomorrow", "Next week"];
 
     const timeWeatherData: {
         time: Date;
@@ -50,9 +46,9 @@ export function WeatherDashboard({ data }: { data: OpenMeteoWeatherResult }) {
     return (
         <>
             <div className="mb-4 flex flex-row justify-between items-center">
-                <div className="px-2 flex flex-col items-center">
-                    <span className="-mt-3 -mb-2 font-black text-6xl">
-                        <NumberFlow value={Math.floor(data.current.temperature_2m * 10) / 10} willChange />
+                <div className="px-4 flex flex-col items-start">
+                    <span className="mb-1 font-black text-6xl">
+                        <span>{data.current.temperature_2m.toFixed(0)}</span>
                         <span>°</span>
                     </span>
                     <p className="text-sm text-zinc-300">{weatherCodeToLabel(data.current.weather_code)}</p>
@@ -73,7 +69,7 @@ export function WeatherDashboard({ data }: { data: OpenMeteoWeatherResult }) {
                     </div>
                 ))}
             </div>
-            <div className="mb-4 flex flex-row gap-6">
+            {/* <div className="mb-4 flex flex-row gap-6">
                 {forecastOptions.map((option, optionIndex) => (
                     <div
                         key={option}
@@ -96,7 +92,7 @@ export function WeatherDashboard({ data }: { data: OpenMeteoWeatherResult }) {
                         )}
                     </div>
                 ))}
-            </div>
+            </div> */}
             <div className="pb-2 flex flex-row gap-2 overflow-x-scroll">
                 {timeWeatherData.map((data) => (
                     <div

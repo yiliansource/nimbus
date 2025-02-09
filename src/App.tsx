@@ -1,6 +1,8 @@
+import { useDrag } from "@use-gesture/react";
 import { format } from "date-fns";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { FaCloud } from "react-icons/fa";
 
 import { AddCityScreen } from "./add-city-screen";
 import { CitylistScreen } from "./city-list.screen";
@@ -10,7 +12,7 @@ import { WeatherDashboard } from "./weather-dashboard";
 
 function App() {
     const currentCityIndex = useAppStore((state) => state.currentCityIndex);
-    // const setCurrentCityIndex = useAppStore((state) => state.setCurrentStateIndex);
+    const setCurrentCityIndex = useAppStore((state) => state.setCurrentCityIndex);
 
     const cities = useAppStore((state) => state.cities);
 
@@ -20,6 +22,13 @@ function App() {
 
     const [weatherApiLoading, setWeatherApiLoading] = useState(false);
     const [weatherApiResponse, setWeatherApiResponse] = useState<OpenMeteoWeatherResult | null>(null);
+
+    const bind = useDrag(({ down, movement: [mx] }) => {
+        if (!down && Math.abs(mx) > 50) {
+            const d = Math.sign(mx);
+            setCurrentCityIndex(currentCityIndex - d);
+        }
+    });
 
     useEffect(() => {
         if (!currentCityData) {
@@ -51,7 +60,7 @@ function App() {
 
     return (
         <>
-            <main className="relative p-5 min-h-screen bg-zinc-900 text-zinc-100 select-none">
+            <main className="relative p-5 min-h-screen bg-zinc-900 text-zinc-100 select-none touch-none" {...bind()}>
                 <AnimatePresence>
                     {cities.length === 0 && !citylistOpen && <AddCityScreen canClose={false} />}
                 </AnimatePresence>
@@ -61,10 +70,19 @@ function App() {
                 </AnimatePresence>
 
                 <div className="mb-2 flex flex-row justify-between items-center">
-                    <motion.div onClick={() => setCitylistOpen(true)} whileTap={{ scale: 0.9 }}>
-                        <p className="font-bold text-xl">{currentCityData?.name ?? "?"}</p>
-                        <p className="text-sm text-zinc-400">{format(new Date(), "cccc, do LLLL")}</p>
-                    </motion.div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentCityData?.id ?? "null"}
+                            onClick={() => setCitylistOpen(true)}
+                            whileTap={{ scale: 0.9 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <p className="font-bold text-xl">{currentCityData?.name ?? "?"}</p>
+                            <p className="text-sm text-zinc-400">{format(new Date(), "cccc, do LLLL")}</p>
+                        </motion.div>
+                    </AnimatePresence>
                     <div>
                         {/* <motion.div
                             className="bg-zinc-800 text-zinc-400 p-2 rounded-lg"
@@ -78,10 +96,26 @@ function App() {
 
                 <AnimatePresence mode="wait">
                     {weatherApiLoading ? (
-                        <motion.div>loading...</motion.div>
+                        <motion.div
+                            key="loading"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <div className="flex my-16 opacity-25">
+                                <div className="m-auto text-4xl animate-pulse">
+                                    <FaCloud />
+                                </div>
+                            </div>
+                        </motion.div>
                     ) : weatherApiResponse ? (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                            <WeatherDashboard data={weatherApiResponse} />
+                        <motion.div
+                            key={currentCityData.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                        >
+                            <WeatherDashboard data={weatherApiResponse!} />
                         </motion.div>
                     ) : null}
                 </AnimatePresence>

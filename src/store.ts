@@ -8,6 +8,7 @@ export type AppStore = {
 
     setCurrentCityIndex: (index: number) => void;
 
+    setCities: (cities: CityData[]) => void;
     addCity: (city: CityData) => void;
     removeCity: (id: number) => void;
 };
@@ -27,11 +28,22 @@ export const useAppStore = create<AppStore>()(
             cities: [],
 
             setCurrentCityIndex: (index: number) => {
-                set({ currentCityIndex: index });
+                set((state: AppStore) => {
+                    state.currentCityIndex = Math.max(0, Math.min(index, state.cities.length - 1));
+                });
             },
 
-            addCity: (city: CityData) => {
+            setCities(cities) {
                 set((state: AppStore) => {
+                    const selectedCityId = state.cities[state.currentCityIndex].id;
+                    state.cities = cities;
+                    state.currentCityIndex = state.cities.findIndex((c) => c.id === selectedCityId);
+                });
+            },
+            addCity: (city) => {
+                set((state: AppStore) => {
+                    if (state.cities.some((c) => c.id === city.id)) return;
+
                     state.cities.push(city);
                     state.currentCityIndex = Math.max(state.currentCityIndex, 0);
                 });

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, Reorder, motion } from "motion/react";
 import { useState } from "react";
 import { FaTimes, FaTrash } from "react-icons/fa";
 
@@ -8,11 +8,16 @@ import { CityData, useAppStore } from "./store";
 
 export function CitylistScreen({ onClose }: { onClose: () => void }) {
     const cities = useAppStore((state) => state.cities);
+    const setCities = useAppStore((state) => state.setCities);
     const removeCity = useAppStore((state) => state.removeCity);
     const currentCityIndex = useAppStore((state) => state.currentCityIndex);
     const setCurrentCityIndex = useAppStore((state) => state.setCurrentCityIndex);
 
     const [addCityOpen, setAddCityOpen] = useState(false);
+
+    const reorderCities = (cities: CityData[]) => {
+        setCities(cities);
+    };
 
     const handleCitySelect = (e: React.MouseEvent, index: number) => {
         e.stopPropagation();
@@ -33,7 +38,7 @@ export function CitylistScreen({ onClose }: { onClose: () => void }) {
                 {addCityOpen && <AddCityScreen canClose={true} onClose={() => setAddCityOpen(false)} />}
             </AnimatePresence>
             <motion.div
-                className="fixed top-0 left-0 w-screen h-screen bg-zinc-900/75 backdrop-blur z-10"
+                className="fixed top-0 left-0 w-screen h-screen bg-zinc-900/90 backdrop-blur z-10"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -50,24 +55,37 @@ export function CitylistScreen({ onClose }: { onClose: () => void }) {
                             <FaTimes />
                         </motion.div>
                     </div>
-                    <div className="mb-4 flex flex-col gap-3">
-                        {cities.map((city, cityIndex) => (
-                            <div
-                                key={city.id}
-                                className="flex flex-row justify-between items-center"
-                                onClick={(e) => handleCitySelect(e, cityIndex)}
-                            >
-                                <div className={clsx(cityIndex === currentCityIndex ? "opacity-100" : "opacity-50")}>
-                                    <p>{city.name}</p>
-                                    <p className="text-xs uppercase text-zinc-400">{city.country}</p>
-                                </div>
-                                <div>
-                                    <div className="text-zinc-600" onClick={(e) => handleCityDelete(e, city)}>
-                                        <FaTrash />
+                    <div className="mb-4">
+                        <Reorder.Group axis="y" values={cities} onReorder={reorderCities}>
+                            {cities.map((city, cityIndex) => (
+                                <Reorder.Item key={city.id} value={city}>
+                                    <div
+                                        className="py-2 flex flex-row items-center"
+                                        onClick={(e) => handleCitySelect(e, cityIndex)}
+                                    >
+                                        {/* <div className="mr-2 ">
+                                            <div className={clsx("p-2 text-zinc-500")}>
+                                                <FaGripVertical />
+                                            </div>
+                                        </div> */}
+                                        <div
+                                            className={clsx(
+                                                "transition-opacity",
+                                                cityIndex === currentCityIndex ? "opacity-100" : "opacity-50",
+                                            )}
+                                        >
+                                            <p>{city.name}</p>
+                                            <p className="text-xs uppercase text-zinc-400">{city.country}</p>
+                                        </div>
+                                        <div className="ml-auto">
+                                            <div className="text-zinc-600" onClick={(e) => handleCityDelete(e, city)}>
+                                                <FaTrash />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                </Reorder.Item>
+                            ))}
+                        </Reorder.Group>
                     </div>
                     <div>
                         <p className="text-zinc-400" onClick={() => setAddCityOpen(true)}>

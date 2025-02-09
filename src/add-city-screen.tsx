@@ -55,7 +55,12 @@ export function AddCityScreen({ canClose, onClose }: { canClose: boolean; onClos
     };
 
     return (
-        <motion.div className="fixed top-0 left-0 w-screen h-screen bg-zinc-900/75 backdrop-blur z-20">
+        <motion.div
+            className="fixed top-0 left-0 w-screen h-screen bg-zinc-900/90 backdrop-blur z-20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+        >
             <div className="p-6 flex flex-col h-full items-center justify-center">
                 <div
                     className={clsx("mt-0 mr-0 ml-auto", !canClose && "opacity-0")}
