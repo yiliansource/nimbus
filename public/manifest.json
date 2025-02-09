@@ -6,12 +6,15 @@
         {
             "src": "/app-icon.png",
             "type": "image/png",
-            "sizes": "120x120"
-        },
+            "sizes": "512x512"
+        }
+    ],
+    "screenshots": [
         {
-            "src": "/app-icon.png",
+            "src": "/screenshot.png",
+            "sizes": "396x703",
             "type": "image/png",
-            "sizes": "180x180"
+            "form_factor": "narrow"
         }
     ],
     "id": "/?source=pwa",
