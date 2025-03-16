@@ -1,8 +1,6 @@
 import { fetchWeatherApi } from "openmeteo";
 import useSWR from "swr";
 
-import { LocationData } from "./store";
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fetcher = async (params: any) => {
     console.log("fetch!");
@@ -41,6 +39,16 @@ const fetcher = async (params: any) => {
             dailyWeatherCodes: dailyWeatherCodes[i],
         }));
 
+    const hourlyTemperatures = hourly.variables(0)!.valuesArray()!;
+    const hourlyWeatherCodes = hourly.variables(1)!.valuesArray()!;
+    const hourlyData = range(Number(hourly.time()), Number(hourly.timeEnd()), hourly.interval())
+        .map(openMeteoTimeToTimestamp)
+        .map((timestamp, i) => ({
+            time: timestamp,
+            temperature: hourlyTemperatures[i],
+            weatherCode: hourlyWeatherCodes[i],
+        }));
+
     // Note: The order of weather variables in the URL query and the indices below need to match!
     const weatherData = {
         current: {
@@ -48,29 +56,27 @@ const fetcher = async (params: any) => {
             temperature: current.variables(0)!.value(),
             weatherCode: current.variables(1)!.value(),
         },
-        hourly: {
-            time: range(Number(hourly.time()), Number(hourly.timeEnd()), hourly.interval()).map(
-                openMeteoTimeToTimestamp,
-            ),
-        },
+        hourly: hourlyData,
         daily: dailyData,
     };
 
     return weatherData;
 };
 
-export const useOpenMeteo = (location: LocationData) => {
-    const key = location
-        ? {
-              latitude: location.latitude.toString(),
-              longitude: location.longitude.toString(),
-              temperature_unit: "celsius",
-              wind_speed_unit: "ms",
-              current: ["temperature_2m", "weather_code"].join(","),
-              hourly: [].join(","),
-              daily: ["temperature_2m_min", "temperature_2m_max", "weather_code"].join(","),
-          }
-        : null;
+export const useOpenMeteo = (location: { latitude: number; longitude: number } | null) => {
+    let key = null;
+    if (location) {
+        const { latitude, longitude } = location;
+        key = {
+            latitude: latitude.toString(),
+            longitude: longitude.toString(),
+            temperature_unit: "celsius",
+            wind_speed_unit: "ms",
+            current: ["temperature_2m", "weather_code"].join(","),
+            hourly: ["temperature_2m", "weather_code"].join(","),
+            daily: ["temperature_2m_min", "temperature_2m_max", "weather_code"].join(","),
+        };
+    }
 
     return useSWR(key, fetcher, {
         refreshInterval: 1000 * 60,

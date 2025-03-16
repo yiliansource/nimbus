@@ -4,18 +4,20 @@ import { useEffect, useState } from "react";
 
 import { ColorTheme, dayTheme, nightTheme } from "../theme";
 
-export function Background() {
-    const [currentTime, setCurrentTime] = useState(moment());
+export function Background({ timeOffset }: { timeOffset: number }) {
+    const [currentTime, setCurrentTime] = useState(moment().add(timeOffset));
 
     useEffect(() => {
+        setCurrentTime(moment().add(timeOffset));
+
         const interval = setInterval(() => {
-            setCurrentTime(moment());
+            setCurrentTime(moment().add(timeOffset));
         }, 1000);
 
         return () => {
             window.clearInterval(interval);
         };
-    }, []);
+    }, [timeOffset]);
 
     const hourOfDay = currentTime.hours() + currentTime.minutes() / 60 + currentTime.seconds() / (60 * 60);
 
@@ -31,7 +33,7 @@ export function Background() {
     const theme = isDay ? dayTheme : nightTheme;
 
     return (
-        <MotionConfig transition={{ duration: 2 }}>
+        <MotionConfig transition={{ duration: 0.5 }}>
             <motion.div
                 className="absolute -z-10 top-0 left-0 w-full h-full"
                 animate={{ backgroundColor: theme.foreground[0][0] }}
