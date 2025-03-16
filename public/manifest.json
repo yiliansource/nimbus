@@ -1,10 +1,10 @@
 {
     "short_name": "nimbus",
-    "name": "nimbus - simple weather checking",
+    "name": "nimbus - delightful weather checking",
     "description": "weather app",
     "icons": [
         {
-            "src": "/app-icon.png",
+            "src": "/apple-touch-icon.png",
             "type": "image/png",
             "sizes": "512x512"
         }
